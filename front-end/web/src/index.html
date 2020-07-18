@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Tetris</title>
+    <style>
+        #canvas {
+            border: 1px solid black;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script data-main="index.js" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <script>
+        <!-- Require the index file -->
+        require(['index'])
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+    "name": "tetris",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^3.9.3"
+    },
+    "scripts": {
+        "build": "mkdir -p dist && cp src/index.html dist/ && tsc"
+    },
+    "author": "",
+    "license": "ISC"
+}
