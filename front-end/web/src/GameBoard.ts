@@ -1,35 +1,42 @@
 import {Tetromino, Z, ReverseZ, L, ReverseL, Line, T, Block} from './Pieces'
+
+interface Tile {
+    xPosition: number
+    yPosition: number
+    isFilled: boolean;
+    colour?: string;
+}
+
 export class GameBoard {
     private canvas: HTMLCanvasElement
     private canvasContext: CanvasRenderingContext2D
 
     private readonly numberOfColumns = 12
     private readonly numberOfRows = 25
-    private updateInterval = 400
+    private updateInterval = 600
     private tileSize: number;
 
     private tiles: Tile[][] = []
     private currentPiece: Tetromino
 
     constructor() {
+        this.setupCanvas()
+        this.initializeBoardTiles()
+        this.spawnNewPiece()
+
+        document.addEventListener('keydown', this.handleInput.bind(this))
+
+        setInterval(this.update.bind(this), this.updateInterval)
+        window.requestAnimationFrame(this.draw.bind(this))
+    }
+
+    private setupCanvas() {
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.canvasContext = this.canvas.getContext("2d")
         this.canvasContext.globalAlpha = 1
 
-        // set up canvas
         this.calculateTileSize()
         this.updateCanvasSize()
-
-        // set up board
-        this.initializeBoardTiles()
-        this.spawnNewPiece()
-
-        // handle key presses
-        document.addEventListener('keydown', this.handleInput.bind(this))
-
-        // start drawing
-        setInterval(this.update.bind(this), this.updateInterval)
-        window.requestAnimationFrame(this.draw.bind(this))
     }
 
     private calculateTileSize() {
@@ -46,10 +53,11 @@ export class GameBoard {
     private initializeBoardTiles() {
         for (let i = 0; i < this.numberOfRows; i++) {
             this.tiles.push([])
-            for (let j = 0; j < this.numberOfRows; j++) {
+            for (let j = 0; j < this.numberOfColumns; j++) {
                 this.tiles[i][j] = {xPosition: j, yPosition: i, isFilled: false}
             }
         }
+        console.log(this.tiles)
     }
 
     private spawnNewPiece() {
@@ -121,21 +129,39 @@ export class GameBoard {
     }
 
     private update() {
-        if (this.pieceHasCollided()) {
+        if (this.pieceHasCollidedBelow()) {
             this.commitCurrentPieceToBoard()
             this.spawnNewPiece()
         } else {
             this.currentPiece.yPosition++
         }
+        this.clearFilledRows()
+    }
+
+    private clearFilledRows() {
+        let filledRowsRemoved = this.tiles.filter(row => !row.every(tile => tile.isFilled)) // remove all filled lines
+        for (let i = this.numberOfRows - filledRowsRemoved.length - 1; i > -1; i--) {
+            filledRowsRemoved.unshift([])
+            for (let j = 0; j < this.numberOfColumns; j++) {
+                filledRowsRemoved[0].push({xPosition: j, yPosition: i, isFilled: false})
+            }
+        }
+        this.tiles = filledRowsRemoved
+    }
+    
+    private pieceHasCollidedBelow(piece: Tetromino = this.currentPiece): boolean {
+        let copy = Tetromino.copy(piece)
+        copy.yPosition++
+        return this.pieceHasCollided(copy)
     }
 
     private pieceHasCollided(piece: Tetromino = this.currentPiece): boolean {
         let {layout, xPosition, yPosition} = piece
-        if (yPosition + layout.length - 1 == (this.numberOfRows - 1)) return true
 
-        for (let row = layout.length - 1; row > -1; row--) {
+        for (let row = 0; row < layout.length; row++) {
             for (let column = 0; column < layout[row].length; column++) {
-                if (layout[row][column] == 1 && this.tiles[yPosition + row + 1][xPosition + column].isFilled)
+                if (!this.tiles[yPosition + row] || !this.tiles[yPosition + row][xPosition + column]) return true // piece will be off board
+                if (layout[row][column] == 1 && this.tiles[yPosition + row][xPosition + column].isFilled)
                     return true
             }
         }
@@ -152,35 +178,6 @@ export class GameBoard {
                     this.tiles[yPosition + i][xPosition + j].colour = colour
                 }
             }
-        }
-    }
-
-    private movePieceLeft() {
-        let copy = Tetromino.copy(this.currentPiece)
-        copy.xPosition--
-        if (copy.xPosition < 0 || this.pieceHasCollided(copy)) return
-        this.currentPiece.xPosition--
-    }
-
-    private movePieceRight() {
-        let copy = Tetromino.copy(this.currentPiece)
-        copy.xPosition++
-        if(this.pieceHasCollided(copy) || copy.xPosition + copy.layout[0].length - 1 == this.numberOfColumns) return
-        this.currentPiece.xPosition++
-    }
-
-    private rotatePiece() {
-        let copy = Tetromino.copy(this.currentPiece)
-        copy.rotate()
-
-        if (this.pieceHasCollided(copy)) return
-
-        this.currentPiece.rotate()
-
-        // adjust x position so that piece is not off screen after rotate
-        let {xPosition, layout} = this.currentPiece
-        if (xPosition + layout[0].length - 1 > this.numberOfColumns - 1) {
-            this.currentPiece.xPosition = this.numberOfColumns - layout[0].length
         }
     }
 
@@ -205,16 +202,41 @@ export class GameBoard {
         }
     }
 
+    private movePieceLeft() {
+        let copy = Tetromino.copy(this.currentPiece)
+        copy.xPosition--
+        if (copy.xPosition < 0 || this.pieceHasCollided(copy)) return
+        this.currentPiece.xPosition--
+    }
+
+    private movePieceRight() {
+        let copy = Tetromino.copy(this.currentPiece)
+        copy.xPosition++
+        if (this.pieceHasCollided(copy)) return
+        this.currentPiece.xPosition++
+    }
+
+    private rotatePiece() {
+        let copy = Tetromino.copy(this.currentPiece)
+        copy.rotate()
+
+        if (this.pieceHasCollided(copy)) return
+
+        this.currentPiece.rotate()
+
+        // adjust x position so that piece is not off screen after rotate
+        let {xPosition, layout} = this.currentPiece
+        if (xPosition + layout[0].length - 1 > this.numberOfColumns - 1) {
+            this.currentPiece.xPosition = this.numberOfColumns - layout[0].length
+        }
+    }
+
     private dropPiece() {
-        while (!this.pieceHasCollided()) {
+        while (!this.pieceHasCollidedBelow()) {
             this.currentPiece.yPosition++
         }
+        this.commitCurrentPieceToBoard()
+        this.spawnNewPiece()
     }
 }
 
-interface Tile {
-    xPosition: number
-    yPosition: number
-    isFilled: boolean;
-    colour?: string;
-}
