@@ -220,15 +220,15 @@ export class GameBoard {
         let copy = Tetromino.copy(this.currentPiece)
         copy.rotate()
 
+        // move piece left so its not off the board after rotating
+        while (copy.layout[0].length + copy.xPosition - 1 >= this.numberOfColumns) {
+            copy.xPosition--
+        }
+
         if (this.pieceHasCollided(copy)) return
 
+        this.currentPiece.xPosition = copy.xPosition // in case copy was moved left
         this.currentPiece.rotate()
-
-        // adjust x position so that piece is not off screen after rotate
-        let {xPosition, layout} = this.currentPiece
-        if (xPosition + layout[0].length - 1 > this.numberOfColumns - 1) {
-            this.currentPiece.xPosition = this.numberOfColumns - layout[0].length
-        }
     }
 
     private dropPiece() {
