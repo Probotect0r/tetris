@@ -1,11 +1,5 @@
 import {Tetromino, Z, ReverseZ, L, ReverseL, Line, T, Block} from './Pieces'
-
-interface Tile {
-    xPosition: number
-    yPosition: number
-    isFilled: boolean;
-    colour?: string;
-}
+import {Tile} from './Tile'
 
 export class GameBoard {
     private canvas: HTMLCanvasElement
@@ -102,6 +96,7 @@ export class GameBoard {
     }
 
     private drawTile(xPosition: number, yPosition: number, colour: string) {
+        // draws coloured tile within white tile for white border effect
         this.canvasContext.fillStyle = 'white'
         this.canvasContext.fillRect(
             xPosition * this.tileSize,
@@ -237,6 +232,7 @@ export class GameBoard {
         }
         this.commitCurrentPieceToBoard()
         this.spawnNewPiece()
+        this.clearFilledRows()
     }
 }
 

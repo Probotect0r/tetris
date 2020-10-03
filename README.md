@@ -2,8 +2,13 @@ Multiplayer tetris game implemented in various technologies.
 
 ## ToDo
 ### Client
-- [x] Rotate piece when its on the edges
+- [X] Rotate piece when its on the edges
 - [ ] Holding a piece
 - [ ] Scoring
-- [ ] Clearing animation
+- [ ] Line clearing animation
 - [ ] Ending the game
+- [ ] Increasing drop speed
+- [ ] Ghost piece
+
+### Server
+- [ ] Create project
