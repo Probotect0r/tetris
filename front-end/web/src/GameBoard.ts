@@ -1,5 +1,5 @@
-import {Tetromino, Z, ReverseZ, L, ReverseL, Line, T, Block} from './Pieces'
-import {Tile} from './Tile'
+import {Tetromino, Z, ReverseZ, L, ReverseL, Line, T, Block} from './Pieces.js'
+import {Tile} from './Tile.js'
 
 export class GameBoard {
     private canvas: HTMLCanvasElement
@@ -143,7 +143,7 @@ export class GameBoard {
         }
         this.tiles = filledRowsRemoved
     }
-    
+
     private pieceHasCollidedBelow(piece: Tetromino = this.currentPiece): boolean {
         let copy = Tetromino.copy(piece)
         copy.yPosition++
