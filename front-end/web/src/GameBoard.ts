@@ -2,41 +2,41 @@ import {Tetromino, Z, ReverseZ, L, ReverseL, Line, T, Block} from './Pieces.js'
 import {Tile} from './Tile.js'
 
 export class GameBoard {
-    private canvas: HTMLCanvasElement
     private canvasContext: CanvasRenderingContext2D
 
-    private readonly numberOfColumns = 12
-    private readonly numberOfRows = 25
+    private readonly numberOfColumns = 10
+    private readonly numberOfRows = 20
     private updateInterval = 600
-    private tileSize = 30;
+    private tileSize = 30
+    private timerIntervalID: number
+    private gameOver = false;
 
     private tiles: Tile[][] = []
     private currentPiece: Tetromino
+    private boundInputHandler
 
-    constructor() {
+    constructor(private canvas: HTMLCanvasElement) {
         this.setupCanvas()
         this.initializeBoardTiles()
         this.spawnNewPiece()
 
-        document.addEventListener('keydown', this.handleInput.bind(this))
+        this.boundInputHandler = this.handleInput.bind(this)
+        document.addEventListener('keydown', this.boundInputHandler)
 
-        setInterval(this.update.bind(this), this.updateInterval)
+        this.timerIntervalID = setInterval(this.update.bind(this), this.updateInterval)
         window.requestAnimationFrame(this.draw.bind(this))
     }
 
     private setupCanvas() {
-        this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.canvasContext = this.canvas.getContext("2d")
         this.canvasContext.globalAlpha = 1
 
-        // this.calculateTileSize()
         this.updateCanvasSize()
     }
 
     private calculateTileSize() {
         // leave 2 pixels for border
         this.tileSize = Math.floor((window.innerHeight - 2) / this.numberOfRows)
-        console.log(`tile size: ${this.tileSize}`)
     }
 
     private updateCanvasSize() {
@@ -51,7 +51,6 @@ export class GameBoard {
                 this.tiles[i][j] = {xPosition: j, yPosition: i, isFilled: false}
             }
         }
-        console.log(this.tiles)
     }
 
     private spawnNewPiece() {
@@ -63,7 +62,7 @@ export class GameBoard {
     private draw() {
         this.drawBoard()
         this.drawCurrentPiece()
-        window.requestAnimationFrame(this.draw.bind(this))
+        if (!this.gameOver) window.requestAnimationFrame(this.draw.bind(this))
     }
 
     private drawBoard() {
@@ -125,12 +124,23 @@ export class GameBoard {
 
     private update() {
         if (this.pieceHasCollidedBelow()) {
+            if (this.gameHasEnded()) return this.endGame()
             this.commitCurrentPieceToBoard()
             this.spawnNewPiece()
         } else {
             this.currentPiece.yPosition++
         }
         this.clearFilledRows()
+    }
+
+    private gameHasEnded(): Boolean {
+        return this.currentPiece.xPosition == 0 && this.currentPiece.yPosition == 0
+    }
+
+    private endGame() {
+        this.gameOver = true
+        window.clearInterval(this.timerIntervalID)
+        document.removeEventListener('keydown', this.boundInputHandler)
     }
 
     private clearFilledRows() {

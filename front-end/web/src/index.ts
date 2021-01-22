@@ -3,10 +3,10 @@ import { GameBoard } from './GameBoard.js'
 document.getElementById('single_player').addEventListener("click", startSinglePlayer)
 
 function startSinglePlayer() {
-    let canvas = document.getElementById("canvas")
+    let canvas = document.getElementById("canvas") as HTMLCanvasElement
     let menu = document.getElementById("menu")
 
     menu.style.display = "none"
     canvas.style.display = "block"
-    let gameBoard = new GameBoard()
+    new GameBoard(canvas)
 }
