@@ -11,7 +11,6 @@ Multiplayer tetris game implemented in various technologies.
 - [ ] Scoring
 - [ ] Line clearing animation
 - [ ] Increasing drop speed
-- [ ] Ghost piece
 
 ### Server
 - [ ] Create project
