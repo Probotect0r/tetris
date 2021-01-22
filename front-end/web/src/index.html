@@ -14,10 +14,13 @@
             margin: auto;
             width: 50%;
             display: flex;
-            padding: 5%;
+            padding: 50px;
+            flex-direction: column;
         }
-        #menu button {
+        #menu * {
             margin: auto;
+            margin-top: 15px;
+            margin-bottom: 20px;
         }
         body {
             margin: 0;
@@ -27,6 +30,7 @@
 
 <body>
     <div id="menu">
+        <h2>Tetris</h2>
         <button id="single_player" onclick="startSinglePlayer()">Single Player</button>
     </div>
     <canvas id="canvas" style="display:none;"></canvas>

@@ -5,6 +5,7 @@ Multiplayer tetris game implemented in various technologies.
 - [X] Rotate piece when its on the edges
 - [X] Before game menu
 - [ ] Ending the game
+- [ ] Make Canvas fixed height
 - [ ] Holding a piece
 - [ ] Next piece indicator
 - [ ] Scoring

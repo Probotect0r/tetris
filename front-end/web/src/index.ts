@@ -1,6 +1,7 @@
 import { GameBoard } from './GameBoard.js'
 
-window.startSinglePlayer = function startSinglePlayer() {
+document.getElementById('single_player').addEventListener("click", startSinglePlayer)
+function startSinglePlayer() {
     let canvas = document.getElementById("canvas")
     let menu = document.getElementById("menu")
 
