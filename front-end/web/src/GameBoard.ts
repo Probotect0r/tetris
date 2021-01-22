@@ -8,7 +8,7 @@ export class GameBoard {
     private readonly numberOfColumns = 12
     private readonly numberOfRows = 25
     private updateInterval = 600
-    private tileSize: number;
+    private tileSize = 30;
 
     private tiles: Tile[][] = []
     private currentPiece: Tetromino
@@ -29,7 +29,7 @@ export class GameBoard {
         this.canvasContext = this.canvas.getContext("2d")
         this.canvasContext.globalAlpha = 1
 
-        this.calculateTileSize()
+        // this.calculateTileSize()
         this.updateCanvasSize()
     }
 
