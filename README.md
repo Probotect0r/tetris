@@ -4,7 +4,7 @@ Multiplayer tetris game implemented in various technologies.
 ### Client
 - [X] Rotate piece when its on the edges
 - [X] Before game menu
-- [ ] Ending the game
+- [X] Ending the game
 - [X] Make Canvas fixed height
 - [ ] Holding a piece
 - [ ] Next piece indicator

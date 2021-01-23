@@ -13,9 +13,9 @@ export class GameBoard {
 
     private tiles: Tile[][] = []
     private currentPiece: Tetromino
-    private boundInputHandler
+    private boundInputHandler: any
 
-    constructor(private canvas: HTMLCanvasElement) {
+    constructor(private canvas: HTMLCanvasElement, private endGameCallback: Function) {
         this.setupCanvas()
         this.initializeBoardTiles()
         this.spawnNewPiece()
@@ -29,8 +29,6 @@ export class GameBoard {
 
     private setupCanvas() {
         this.canvasContext = this.canvas.getContext("2d")
-        this.canvasContext.globalAlpha = 1
-
         this.updateCanvasSize()
     }
 
@@ -60,9 +58,22 @@ export class GameBoard {
     }
 
     private draw() {
-        this.drawBoard()
-        this.drawCurrentPiece()
-        if (!this.gameOver) window.requestAnimationFrame(this.draw.bind(this))
+        if (this.gameOver) {
+            this.canvasContext.globalAlpha = 0.1
+            this.drawBoard()
+            this.drawCurrentPiece()
+            this.canvasContext.globalAlpha = 1
+            this.canvasContext.font = "30px serif"
+            this.canvasContext.fillStyle = "Black"
+            this.canvasContext.textAlign = "center"
+            this.canvasContext.fillText("Game Over", this.canvas.width/2, this.canvas.height/3);
+            this.canvasContext.font = "15px serif"
+            this.canvasContext.fillText("Press any key to continue", this.canvas.width/2, this.canvas.height/3 + 15);
+        } else {
+            this.drawBoard()
+            this.drawCurrentPiece()
+            window.requestAnimationFrame(this.draw.bind(this))
+        }
     }
 
     private drawBoard() {
@@ -114,7 +125,8 @@ export class GameBoard {
     }
 
     private clearTile(xPosition: number, yPosition: number) {
-        this.canvasContext.clearRect(
+        this.canvasContext.fillStyle = 'white'
+        this.canvasContext.fillRect(
             xPosition * this.tileSize,
             yPosition * this.tileSize,
             this.tileSize,
@@ -141,6 +153,8 @@ export class GameBoard {
         this.gameOver = true
         window.clearInterval(this.timerIntervalID)
         document.removeEventListener('keydown', this.boundInputHandler)
+
+        document.addEventListener('keydown', () => {this.endGameCallback()}, {once: true})
     }
 
     private clearFilledRows() {
