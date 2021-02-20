@@ -15,3 +15,4 @@ Multiplayer tetris game implemented in various technologies.
 
 ### Server
 - [ ] Create project
+- [ ] Add functionality for creating a room
